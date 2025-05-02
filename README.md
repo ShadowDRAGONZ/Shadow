@@ -17,28 +17,17 @@ local cooldownEnabled = false
 local awakeningEnabled = false
 local lastUsed = 0
 local originalAbilityCooldown = success and AbilityController.AbilityCooldown
+local v179 = "Prodigy"  -- Giá trị Flow mặc định
 
 --// MAIN GUI
 local screenGui = Instance.new("ScreenGui", PlayerGui)
 screenGui.Name = "UnifiedMenu"
 screenGui.ResetOnSpawn = false
 
--- RAINBOW TOGGLE BUTTON
-local rainbowButton = Instance.new("TextButton", screenGui)
-rainbowButton.Size = UDim2.new(0, 40, 0, 40)
-rainbowButton.Position = UDim2.new(0, 20, 0.5, -20)
-rainbowButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
-rainbowButton.Text = "☰"
-rainbowButton.TextColor3 = Color3.new(1, 1, 1)
-rainbowButton.Font = Enum.Font.SourceSansBold
-rainbowButton.TextSize = 24
-rainbowButton.Draggable = true
-rainbowButton.Active = true
-
--- MAIN FRAME (TO LARGER SIZE)
+-- MAIN FRAME
 local mainFrame = Instance.new("Frame", screenGui)
-mainFrame.Size = UDim2.new(0, 480, 0, 380)
-mainFrame.Position = UDim2.new(0.5, -240, 0.4, -190)
+mainFrame.Size = UDim2.new(0, 480, 0, 500)
+mainFrame.Position = UDim2.new(0.5, -240, 0.4, -250)
 mainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 mainFrame.BorderSizePixel = 0
 mainFrame.Visible = false
@@ -53,10 +42,58 @@ title.TextColor3 = Color3.fromRGB(255, 255, 255)
 title.Font = Enum.Font.SourceSansBold
 title.TextSize = 20
 
+-- RAINBOW TOGGLE BUTTON
+local rainbowButton = Instance.new("TextButton", screenGui)
+rainbowButton.Size = UDim2.new(0, 40, 0, 40)
+rainbowButton.Position = UDim2.new(0, 20, 0.5, -20)
+rainbowButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+rainbowButton.Text = "☰"
+rainbowButton.TextColor3 = Color3.new(1, 1, 1)
+rainbowButton.Font = Enum.Font.SourceSansBold
+rainbowButton.TextSize = 24
+rainbowButton.Draggable = true
+rainbowButton.Active = true
+
+-- FLOW PANEL
+local flowFrame = Instance.new("Frame", mainFrame)
+flowFrame.Size = UDim2.new(1, -20, 0, 60)
+flowFrame.Position = UDim2.new(0, 10, 0, 40)
+flowFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+flowFrame.BorderSizePixel = 0
+
+local flowLabel = Instance.new("TextLabel", flowFrame)
+flowLabel.Size = UDim2.new(1, 0, 0, 20)
+flowLabel.BackgroundTransparency = 1
+flowLabel.Text = "Current Flow: " .. v179
+flowLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+flowLabel.Font = Enum.Font.SourceSans
+flowLabel.TextSize = 14
+
+local flowInputBox = Instance.new("TextBox", flowFrame)
+flowInputBox.Size = UDim2.new(1, -6, 0, 30)
+flowInputBox.Position = UDim2.new(0, 3, 0, 30)
+flowInputBox.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+flowInputBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+flowInputBox.Font = Enum.Font.SourceSans
+flowInputBox.TextSize = 18
+flowInputBox.PlaceholderText = "Nhập Flow"
+flowInputBox.Text = v179
+
+flowInputBox.FocusLost:Connect(function(enterPressed)
+	if enterPressed and flowInputBox.Text ~= "" then
+		v179 = flowInputBox.Text
+		flowLabel.Text = "Current Flow: " .. v179
+		local playerStats = LocalPlayer:FindFirstChild("PlayerStats")
+		if playerStats and playerStats:FindFirstChild("Flow") then
+			playerStats.Flow.Value = v179
+		end
+	end
+end)
+
 -- STYLE PANEL
 local styleFrame = Instance.new("Frame", mainFrame)
-styleFrame.Size = UDim2.new(1, -20, 0, 230)
-styleFrame.Position = UDim2.new(0, 10, 0, 40)
+styleFrame.Size = UDim2.new(1, -20, 0, 150)
+styleFrame.Position = UDim2.new(0, 10, 0, 100)
 styleFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
 styleFrame.BorderSizePixel = 0
 
@@ -69,7 +106,6 @@ styleLabel.Font = Enum.Font.SourceSans
 styleLabel.TextSize = 14
 styleLabel.Text = "Đang áp dụng Style..."
 
--- SCROLL LIST
 local scroll = Instance.new("ScrollingFrame", styleFrame)
 scroll.Size = UDim2.new(1, 0, 1, -20)
 scroll.CanvasSize = UDim2.new(0, 0, 0, 0)
@@ -95,9 +131,7 @@ styleBox.FocusLost:Connect(function(enterPressed)
 	end
 end)
 
--- DANH SÁCH STYLE
 local styles = {"NEL Isagi", "Kaiser", "Sae", "Don Lorenzo", "Kunigami", "Kurona"}
-
 for i, name in ipairs(styles) do
 	local btn = Instance.new("TextButton", scroll)
 	btn.Size = UDim2.new(1, -6, 0, 30)
@@ -197,4 +231,3 @@ end)
 rainbowButton.MouseButton1Click:Connect(function()
 	mainFrame.Visible = not mainFrame.Visible
 end)
-
